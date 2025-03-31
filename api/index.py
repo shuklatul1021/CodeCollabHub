@@ -1,0 +1,1 @@
+from codecollabhub.wsgi import application 

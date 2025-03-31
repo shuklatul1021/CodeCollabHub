@@ -121,7 +121,7 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'project_list'
 LOGOUT_REDIRECT_URL = 'login'
 
-# Add logging configuration
+# Add more detailed logging configuration
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -148,11 +148,6 @@ LOGGING = {
             'propagate': True,
         },
         'projects': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'channels': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

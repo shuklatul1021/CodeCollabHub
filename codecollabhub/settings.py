@@ -32,7 +32,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'channels',
     'accounts',
     'projects',
 ]
@@ -68,25 +67,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'codecollabhub.wsgi.application'
-ASGI_APPLICATION = 'codecollabhub.asgi.application'
-
-# Channel Layers for WebSocket support
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    },
-}
-
-# Add CORS settings for WebSocket
-CORS_ALLOW_ALL_ORIGINS = True  # Only for development
-CORS_ALLOW_CREDENTIALS = True
-
-# Add WebSocket specific settings
-WEBSOCKET_ACCEPT_ALL = True  # Only for development
-WEBSOCKET_ACCEPT_ALL_ORIGINS = True  # Only for development
-
-# Add WebSocket URL patterns
-WEBSOCKET_URL = 'ws://127.0.0.1:8000/ws/'
 
 # Database
 DATABASES = {
@@ -140,13 +120,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'project_list'
 LOGOUT_REDIRECT_URL = 'login'
-
-# Disable WebSocket for Vercel deployment
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer",
-    },
-}
 
 # Add logging configuration
 LOGGING = {

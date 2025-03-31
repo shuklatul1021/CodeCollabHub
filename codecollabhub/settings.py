@@ -12,12 +12,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-key-for-development-only')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost', '127.0.0.1', '*']
+# Update ALLOWED_HOSTS for Vercel
+ALLOWED_HOSTS = ['.vercel.app', 'localhost', '127.0.0.1']
 
-# CSRF settings
+# Update CSRF settings
 CSRF_TRUSTED_ORIGINS = [
+    'https://*.vercel.app',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
 ]
@@ -35,8 +37,10 @@ INSTALLED_APPS = [
     'projects',
 ]
 
+# Add WhiteNoise for static files
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -114,12 +118,15 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
+# Configure static files
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+
+# Use WhiteNoise for static files
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Ensure the static directory exists
 STATIC_DIR = os.path.join(BASE_DIR, 'static')
@@ -134,11 +141,10 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'project_list'
 LOGOUT_REDIRECT_URL = 'login'
 
-# Channels configuration
-ASGI_APPLICATION = 'codecollabhub.asgi.application'
+# Disable WebSocket for Vercel deployment
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",
     },
 }
 

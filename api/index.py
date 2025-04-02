@@ -12,7 +12,7 @@ try:
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'codecollabhub.settings')
     
     # Get the WSGI application
-    application = get_wsgi_application()
+    app = get_wsgi_application()
     
     logger.info("Django application initialized successfully")
 except Exception as e:

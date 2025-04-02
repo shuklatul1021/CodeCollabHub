@@ -4,9 +4,17 @@
         {
             "src": "api/index.py",
             "use": "@vercel/python"
+        },
+        {
+            "src": "static/**",
+            "use": "@vercel/static"
         }
     ],
     "routes": [
+        {
+            "src": "/static/(.*)",
+            "dest": "/static/$1"
+        },
         {
             "src": "/(.*)",
             "dest": "api/index.py"
@@ -14,6 +22,7 @@
     ],
     "env": {
         "PYTHONPATH": ".",
-        "DJANGO_SETTINGS_MODULE": "codecollabhub.settings"
+        "DJANGO_SETTINGS_MODULE": "codecollabhub.settings",
+        "SECRET_KEY": "your-secret-key-here"
     }
 } 

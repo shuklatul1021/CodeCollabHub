@@ -1,53 +1,47 @@
 {
     "version": 2,
     "builds": [
-        {
-            "src": "api/index.py",
-            "use": "@vercel/python"
-        },
-        {
-            "src": "static/**",
-            "use": "@vercel/static"
-        },
-        {
-            "src": "staticfiles/**",
-            "use": "@vercel/static"
-        }
+      {
+        "src": "api/index.py",
+        "use": "@vercel/python"
+      },
+      {
+        "src": "static/**",
+        "use": "@vercel/static"
+      },
+      {
+        "src": "staticfiles/**",
+        "use": "@vercel/static"
+      }
     ],
     "routes": [
-        {
-            "src": "/static/(.*)",
-            "dest": "/static/$1"
-        },
-        {
-            "src": "/staticfiles/(.*)",
-            "dest": "/staticfiles/$1"
-        },
-        {
-            "src": "/media/(.*)",
-            "dest": "/media/$1"
-        },
-        {
-            "src": "/(.*)",
-            "dest": "api/index.py"
-        }
+      {
+        "src": "/static/(.*)",
+        "dest": "/static/$1"
+      },
+      {
+        "src": "/staticfiles/(.*)",
+        "dest": "/staticfiles/$1"
+      },
+      {
+        "src": "/media/(.*)",
+        "dest": "/media/$1"
+      },
+      {
+        "src": "/(.*)",
+        "dest": "api/index.py"
+      }
     ],
     "env": {
-        "PYTHONPATH": ".",
-        "DJANGO_SETTINGS_MODULE": "codecollabhub.settings",
-        "DJANGO_ENV": "production",
-        "ALLOWED_HOSTS": ".vercel.app,localhost,127.0.0.1",
-        "CSRF_TRUSTED_ORIGINS": "https://*.vercel.app,http://localhost:8000,http://127.0.0.1:8000",
-        "DISABLE_COLLECTSTATIC": "1",
-        "DEBUG": "False",
-        "PYTHONUNBUFFERED": "1",
-        "DATABASE_URL": "postgresql://neondb_owner:npg_uXA2CHdO5eIx@ep-raspy-scene-a49n7gjw-pooler.us-east-1.aws.neon.tech:5432/neondb?sslmode=require"
-    },
-    "functions": {
-        "api/index.py": {
-            "memory": 1024,
-            "maxDuration": 10,
-            "runtime": "python3.9"
-        }
+      "PYTHONPATH": ".",
+      "DJANGO_SETTINGS_MODULE": "codecollabhub.settings",
+      "DJANGO_ENV": "production",
+      "ALLOWED_HOSTS": ".vercel.app,localhost,127.0.0.1",
+      "CSRF_TRUSTED_ORIGINS": "https://*.vercel.app,http://localhost:8000,http://127.0.0.1:8000",
+      "DISABLE_COLLECTSTATIC": "1",
+      "DEBUG": "False",
+      "PYTHONUNBUFFERED": "1",
+      "DATABASE_URL": "postgresql://neondb_owner:npg_uXA2CHdO5eIx@ep-raspy-scene-a49n7gjw-pooler.us-east-1.aws.neon.tech:5432/neondb?sslmode=require"
     }
-} 
+  }
+  

@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ code_file.filename }} - {{ project.name }} - CodeCollab Hub{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/editor.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/editor/editor.main.css">
+{% endblock %}
+
+{% block content %}
+{% csrf_token %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">{{ code_file.filename }}</h1>
+        <div class="flex gap-4">
+            <button id="save-btn" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition">
+                Save
+            </button>
+        </div>
+    </div>
+
+    <div id="editor-container" class="flex h-[calc(100vh-220px)]" data-project-id="{{ project.id }}" data-file-id="{{ code_file.id }}" data-language="{{ code_file.language }}">
+        <div class="w-64 border-r bg-gray-50">
+            <div class="p-4 border-b flex justify-between items-center">
+                <h3 class="font-medium text-gray-700">Project Files</h3>
+                <a href="{% url 'create_file' project.id %}" class="px-2 py-1 bg-primary text-white text-sm rounded hover:bg-blue-600 transition">New File</a>
+            </div>
+            <ul class="overflow-y-auto">
+                <li class="border-l-4 border-primary bg-blue-50">
+                    <a href="{% url 'code_editor' project.id code_file.id %}" class="block px-4 py-2 text-primary">{{ code_file.filename }}</a>
+                </li>
+                {% for file in other_files %}
+                <li class="border-l-4 border-transparent hover:bg-gray-100">
+                    <a href="{% url 'code_editor' project.id file.id %}" class="block px-4 py-2 text-gray-700 hover:text-primary">{{ file.filename }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <div class="flex-1 flex flex-col">
+            <div class="flex-1" id="editor"></div>
+            
+            <div class="border-t bg-gray-50 p-4">
+                <h3 class="font-medium text-gray-700 mb-2">Collaborators</h3>
+                <ul id="collaborators-list" class="flex flex-wrap gap-2">
+                    <li class="flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm">
+                        <span class="w-2 h-2 bg-primary rounded-full mr-2"></span>
+                        <span>{{ user.username }} (you)</span>
+                    </li>
+                    <!-- Other collaborators will be added dynamically via JavaScript -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Monaco Editor -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+<script>
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+        window.monaco = monaco;
+        window.dispatchEvent(new Event('monaco-loaded'));
+    });
+</script>
+
+<!-- Initial content is provided here but hidden, used by the editor -->
+<script type="text/plain" id="initial-content">{{ content }}</script>
+
+<!-- Custom editor styles -->
+<style>
+    #editor {
+        width: 100%;
+        height: 100%;
+    }
+    
+    .monaco-editor {
+        padding-top: 10px;
+    }
+    
+    .remote-cursor {
+        position: absolute;
+        width: 3px;
+        height: 1.2em;
+        background-color: #ff0000;
+    }
+    
+    .remote-cursor-label {
+        position: absolute;
+        top: -1.4em;
+        left: 0;
+        font-size: 12px;
+        color: white;
+        padding: 0 4px;
+        border-radius: 3px;
+        white-space: nowrap;
+    }
+</style>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/js/editor.js"></script>
+<style>
+    .CodeMirror {
+        height: 100%;
+        font-family: 'Fira Code', monospace;
+        font-size: 14px;
+    }
+    
+    /* Custom styling for remote cursors */
+    .remote-cursor {
+        position: relative;
+        width: 2px;
+        height: 1.2em;
+    }
+    
+    .remote-cursor-label {
+        position: absolute;
+        top: -1.4em;
+        left: 0;
+        font-size: 12px;
+        color: white;
+        padding: 0 4px;
+        border-radius: 3px;
+        white-space: nowrap;
+        z-index: 10;
+    }
+    
+    /* Notification styling */
+    .notification {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 20px;
+        border-radius: 6px;
+        color: white;
+        opacity: 0;
+        transform: translateX(30px);
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 1000;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .notification.show {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    
+    .notification.success {
+        background-color: #28a745;
+    }
+    
+    .notification.error {
+        background-color: #dc3545;
+    }
+    
+    .notification.info {
+        background-color: #17a2b8;
+    }
+</style>
+{% endblock %}

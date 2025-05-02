@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Create File - {{ project.name }} - CodeCollab Hub{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Create New File</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.non_field_errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="form-group">
+                            <label for="{{ form.filename.id_for_label }}">Filename</label>
+                            {{ form.filename }}
+                            {% if form.filename.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.filename.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <small class="form-text text-muted">Include the file extension (e.g., .py, .js, .html)</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="{{ form.language.id_for_label }}">Language</label>
+                            {{ form.language }}
+                            {% if form.language.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.language.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Create File</button>
+                            <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Cancel</a>
+                        </div>
+                    </form>
+
+                    {% if existing_files %}
+                    <div class="mt-4">
+                        <h4>Existing Files in Project:</h4>
+                        <ul class="list-group">
+                            {% for file in existing_files %}
+                            <li class="list-group-item">
+                                <i class="fas fa-file-code"></i> {{ file.filename }}
+                                <span class="badge badge-secondary">{{ file.language }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .card {
+        margin-top: 2rem;
+    }
+    
+    .card-header {
+        background-color: #f8f9fa;
+        padding: 1rem;
+    }
+    
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .list-group-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .badge {
+        margin-left: auto;
+    }
+</style>
+{% endblock %} 

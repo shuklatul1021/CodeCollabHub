@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}Tasks - {{ project.name }} - CodeCollab Hub{% endblock %}
+
+{% block content %}
+<div class="task-header">
+    <div class="task-title">
+        <h1>Tasks - {{ project.name }}</h1>
+    </div>
+    <div class="task-actions">
+        <a href="{% url 'create_task' project.id %}" class="btn btn-primary">Create Task</a>
+        <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Back to Project</a>
+    </div>
+</div>
+
+<div class="task-filters">
+    <div class="task-filter">
+        <label for="task-filter">Status:</label>
+        <select id="task-filter" class="form-control">
+            <option value="all">All</option>
+            <option value="todo">To Do</option>
+            <option value="in_progress">In Progress</option>
+            <option value="review">Review</option>
+            <option value="done">Done</option>
+        </select>
+    </div>
+    
+    <div class="task-filter">
+        <label for="assignee-filter">Assignee:</label>
+        <select id="assignee-filter" class="form-control">
+            <option value="all">All</option>
+            <option value="unassigned">Unassigned</option>
+            {% for member in project.get_all_members %}
+            <option value="{{ member.id }}">{{ member.username }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    
+    <div class="task-filter">
+        <label for="task-search">Search:</label>
+        <input type="text" id="task-search" class="form-control" placeholder="Search tasks...">
+    </div>
+</div>
+
+{% if tasks.exists %}
+<div class="task-board" data-project-id="{{ project.id }}">
+    <div class="task-column" data-status="todo">
+        <div class="task-column-header">
+            <div class="task-column-title">To Do <span class="task-counter">0</span></div>
+        </div>
+        <div class="task-list">
+            {% for task in tasks %}
+            {% if task.status == 'todo' %}
+            <div class="task-item task-item-todo" data-task-id="{{ task.id }}" data-status="{{ task.status }}" data-assignee="{% if task.assigned_to %}{{ task.assigned_to.id }}{% endif %}">
+                <div class="task-title">{{ task.title }}</div>
+                {% if task.description %}
+                <div class="task-description">{{ task.description|truncatechars:100 }}</div>
+                {% endif %}
+                <div class="task-meta">
+                    <div class="task-assignee">
+                        {% if task.assigned_to %}
+                        <div class="task-assignee-avatar">{{ task.assigned_to.username|first|upper }}</div>
+                        {{ task.assigned_to.username }}
+                        {% else %}
+                        Unassigned
+                        {% endif %}
+                    </div>
+                    {% if task.due_date %}
+                    <div class="task-due-date">{{ task.due_date|date:"M d" }}</div>
+                    {% endif %}
+                </div>
+                <div class="task-actions">
+                    <a href="{% url 'task_detail' project.id task.id %}" class="btn btn-sm btn-secondary">View</a>
+                    <a href="{% url 'edit_task' project.id task.id %}" class="btn btn-sm btn-secondary">Edit</a>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="task-column" data-status="in_progress">
+        <div class="task-column-header">
+            <div class="task-column-title">In Progress <span class="task-counter">0</span></div>
+        </div>
+        <div class="task-list">
+            {% for task in tasks %}
+            {% if task.status == 'in_progress' %}
+            <div class="task-item task-item-in-progress" data-task-id="{{ task.id }}" data-status="{{ task.status }}" data-assignee="{% if task.assigned_to %}{{ task.assigned_to.id }}{% endif %}">
+                <div class="task-title">{{ task.title }}</div>
+                {% if task.description %}
+                <div class="task-description">{{ task.description|truncatechars:100 }}</div>
+                {% endif %}
+                <div class="task-meta">
+                    <div class="task-assignee">
+                        {% if task.assigned_to %}
+                        <div class="task-assignee-avatar">{{ task.assigned_to.username|first|upper }}</div>
+                        {{ task.assigned_to.username }}
+                        {% else %}
+                        Unassigned
+                        {% endif %}
+                    </div>
+                    {% if task.due_date %}
+                    <div class="task-due-date">{{ task.due_date|date:"M d" }}</div>
+                    {% endif %}
+                </div>
+                <div class="task-actions">
+                    <a href="{% url 'task_detail' project.id task.id %}" class="btn btn-sm btn-secondary">View</a>
+                    <a href="{% url 'edit_task' project.id task.id %}" class="btn btn-sm btn-secondary">Edit</a>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="task-column" data-status="review">
+        <div class="task-column-header">
+            <div class="task-column-title">Review <span class="task-counter">0</span></div>
+        </div>
+        <div class="task-list">
+            {% for task in tasks %}
+            {% if task.status == 'review' %}
+            <div class="task-item task-item-review" data-task-id="{{ task.id }}" data-status="{{ task.status }}" data-assignee="{% if task.assigned_to %}{{ task.assigned_to.id }}{% endif %}">
+                <div class="task-title">{{ task.title }}</div>
+                {% if task.description %}
+                <div class="task-description">{{ task.description|truncatechars:100 }}</div>
+                {% endif %}
+                <div class="task-meta">
+                    <div class="task-assignee">
+                        {% if task.assigned_to %}
+                        <div class="task-assignee-avatar">{{ task.assigned_to.username|first|upper }}</div>
+                        {{ task.assigned_to.username }}
+                        {% else %}
+                        Unassigned
+                        {% endif %}
+                    </div>
+                    {% if task.due_date %}
+                    <div class="task-due-date">{{ task.due_date|date:"M d" }}</div>
+                    {% endif %}
+                </div>
+                <div class="task-actions">
+                    <a href="{% url 'task_detail' project.id task.id %}" class="btn btn-sm btn-secondary">View</a>
+                    <a href="{% url 'edit_task' project.id task.id %}" class="btn btn-sm btn-secondary">Edit</a>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    
+    <div class="task-column" data-status="done">
+        <div class="task-column-header">
+            <div class="task-column-title">Done <span class="task-counter">0</span></div>
+        </div>
+        <div class="task-list">
+            {% for task in tasks %}
+            {% if task.status == 'done' %}
+            <div class="task-item task-item-done" data-task-id="{{ task.id }}" data-status="{{ task.status }}" data-assignee="{% if task.assigned_to %}{{ task.assigned_to.id }}{% endif %}">
+                <div class="task-title">{{ task.title }}</div>
+                {% if task.description %}
+                <div class="task-description">{{ task.description|truncatechars:100 }}</div>
+                {% endif %}
+                <div class="task-meta">
+                    <div class="task-assignee">
+                        {% if task.assigned_to %}
+                        <div class="task-assignee-avatar">{{ task.assigned_to.username|first|upper }}</div>
+                        {{ task.assigned_to.username }}
+                        {% else %}
+                        Unassigned
+                        {% endif %}
+                    </div>
+                    {% if task.due_date %}
+                    <div class="task-due-date">{{ task.due_date|date:"M d" }}</div>
+                    {% endif %}
+                </div>
+                <div class="task-actions">
+                    <a href="{% url 'task_detail' project.id task.id %}" class="btn btn-sm btn-secondary">View</a>
+                    <a href="{% url 'edit_task' project.id task.id %}" class="btn btn-sm btn-secondary">Edit</a>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="empty-state">
+    <p>No tasks yet. Create your first task to start tracking work.</p>
+    <a href="{% url 'create_task' project.id %}" class="btn btn-primary">Create Task</a>
+</div>
+{% endif %}
+
+<style>
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .task-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+</style>
+
+{% block scripts %}
+<script src="/static/js/tasks.js"></script>
+{% endblock %}
+
+{% endblock %}

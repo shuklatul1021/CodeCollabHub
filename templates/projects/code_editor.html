@@ -1,0 +1,219 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ code_file.filename }} - {{ project.name }} - CodeCollab Hub{% endblock %}
+
+{% block content %}
+<div class="container-fluid h-100">
+    <div class="row h-100">
+        <!-- File Navigation Sidebar -->
+        <div class="col-md-2 sidebar">
+            <div class="file-navigation">
+                <h3>Files</h3>
+                <ul class="file-list">
+                    {% for file in project.code_files.all %}
+                    <li class="{% if file.id == code_file.id %}active{% endif %}">
+                        <a href="{% url 'code_editor' project.id file.id %}">
+                            <i class="fas fa-file-code"></i> {{ file.filename }}
+                        </a>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'create_file' project.id %}" class="btn btn-primary btn-sm mt-3">
+                    <i class="fas fa-plus"></i> New File
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Editor Area -->
+        <div class="col-md-10 main-content">
+            <div class="editor-header">
+                <div class="file-info">
+                    <h2>{{ code_file.filename }}</h2>
+                    <span class="language-badge">{{ code_file.language }}</span>
+                </div>
+                <div class="editor-actions">
+                    <button id="save-button" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                    <a href="{% url 'file_history' project.id code_file.id %}" class="btn btn-secondary">
+                        <i class="fas fa-history"></i> History
+                    </a>
+                </div>
+            </div>
+
+            <div class="editor-container">
+                <div id="editor">{{ content }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Make the page take full height */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+    }
+
+    /* Container styles */
+    .container-fluid {
+        padding: 0;
+        height: 100vh;
+    }
+
+    /* Sidebar styles */
+    .sidebar {
+        background-color: #f8f9fa;
+        height: 100vh;
+        padding: 20px;
+        border-right: 1px solid #dee2e6;
+        overflow-y: auto;
+        position: fixed;
+        width: 250px;
+    }
+
+    .file-navigation {
+        margin-bottom: 20px;
+    }
+
+    .file-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .file-list li {
+        padding: 8px 0;
+    }
+
+    .file-list li.active {
+        background-color: #e9ecef;
+        border-radius: 4px;
+    }
+
+    .file-list a {
+        color: #495057;
+        text-decoration: none;
+        display: block;
+        padding: 0 10px;
+    }
+
+    .file-list a:hover {
+        color: #007bff;
+    }
+
+    /* Main content styles */
+    .main-content {
+        margin-left: 250px; /* Match sidebar width */
+        padding: 20px;
+        height: 100vh;
+        width: calc(100% - 250px);
+    }
+
+    .editor-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-right: 20px;
+    }
+
+    .file-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .language-badge {
+        background-color: #e9ecef;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.9em;
+    }
+
+    .editor-container {
+        position: relative;
+        height: calc(100vh - 100px);
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+    }
+
+    #editor {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        font-size: 14px;
+    }
+
+    .editor-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    /* Button styles */
+    .btn {
+        padding: 8px 16px;
+        border-radius: 4px;
+        font-weight: 500;
+    }
+
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .btn-secondary {
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+</style>
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+<script>
+    // Initialize Ace Editor
+    var editor = ace.edit("editor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/{{ code_file.language }}");
+    editor.setOptions({
+        fontSize: "14px",
+        enableBasicAutocompletion: true,
+        enableLiveAutocompletion: true,
+        showPrintMargin: false, // Hide the vertical line
+        highlightActiveLine: true,
+        displayIndentGuides: true,
+        showGutter: true,
+        wrap: true
+    });
+
+    // Save functionality
+    document.getElementById('save-button').addEventListener('click', function() {
+        const content = editor.getValue();
+        fetch("{% url 'save_file' project.id code_file.id %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ content: content })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Show success message
+                alert('File saved successfully!');
+            } else {
+                alert('Error saving file: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error saving file');
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

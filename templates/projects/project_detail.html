@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project.name }} - CodeCollab Hub{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">{{ project.name }}</h1>
+        <div class="flex gap-4">
+            {% if is_owner %}
+                <a href="{% url 'edit_project' project.id %}" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition">
+                    Edit Project
+                </a>
+                <a href="{% url 'delete_project' project.id %}" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
+                    Delete Project
+                </a>
+                <a href="{% url 'create_file' project.id %}" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition">
+                    Add File
+                </a>
+            {% elif is_member %}
+                <a href="{% url 'create_file' project.id %}" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition">
+                    Add File
+                </a>
+            {% elif not has_pending_request and project.is_public %}
+                <form method="post" action="{% url 'request_to_join' project.id %}" class="inline">
+                    {% csrf_token %}
+                    <button type="submit" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition">
+                        Request to Join
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Description</h2>
+                <p class="text-gray-600">{{ project.description }}</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Files</h2>
+                {% if files %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {% for file in files %}
+                        <div class="border rounded-lg p-4">
+                            <h3 class="font-medium text-gray-800">{{ file.filename }}</h3>
+                            <p class="text-sm text-gray-600 mb-2">{{ file.language }}</p>
+                            <a href="{% url 'code_editor' project.id file.id %}" class="text-primary hover:text-blue-600 transition">
+                                Open Editor
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-gray-600">No files yet.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow p-6 mb-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Project Info</h2>
+                <div class="space-y-2">
+                    <p class="text-gray-600">
+                        <span class="font-medium">Owner:</span> {{ project.owner.username }}
+                    </p>
+                    <p class="text-gray-600">
+                        <span class="font-medium">Created:</span> {{ project.created_at|date:"M d, Y" }}
+                    </p>
+                    <p class="text-gray-600">
+                        <span class="font-medium">Members:</span> {{ project.members.count }}/{{ project.max_members }}
+                    </p>
+                    <p class="text-gray-600">
+                        <span class="font-medium">Status:</span>
+                        {% if project.is_public %}
+                            <span class="text-green-600">Public</span>
+                        {% else %}
+                            <span class="text-red-600">Private</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6">
+                <h2 class="text-xl font-semibold text-gray-800 mb-4">Members</h2>
+                <div class="space-y-2">
+                    {% for member in project.members.all %}
+                    <div class="flex items-center justify-between">
+                        <span class="text-gray-600">{{ member.username }}</span>
+                        {% if member == project.owner %}
+                            <span class="text-sm text-gray-500">Owner</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

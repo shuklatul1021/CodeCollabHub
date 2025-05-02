@@ -1,0 +1,230 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ task.title }} - {{ project.name }} - CodeCollab Hub{% endblock %}
+
+{% block content %}
+<div class="task-detail-header">
+    <div class="task-breadcrumb">
+        <a href="{% url 'project_detail' project.id %}">{{ project.name }}</a> / 
+        <a href="{% url 'task_list' project.id %}">Tasks</a> / 
+        <span>{{ task.title }}</span>
+    </div>
+    <div class="task-actions">
+        <a href="{% url 'edit_task' project.id task.id %}" class="btn btn-primary">Edit Task</a>
+        <a href="{% url 'delete_task' project.id task.id %}" class="btn btn-danger confirm-delete">Delete Task</a>
+        <a href="{% url 'task_list' project.id %}" class="btn btn-secondary">Back to Tasks</a>
+    </div>
+</div>
+
+<div class="task-detail-container">
+    <div class="task-detail-main">
+        <div class="task-header">
+            <h1 class="task-title">{{ task.title }}</h1>
+            <span class="task-status status-{{ task.status }}">{{ task.get_status_display }}</span>
+        </div>
+        
+        <div class="task-description-section">
+            <h3>Description</h3>
+            <div class="task-description">
+                {% if task.description %}
+                    {{ task.description|linebreaks }}
+                {% else %}
+                    <p class="text-muted">No description provided.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="task-detail-sidebar">
+        <div class="task-meta-section">
+            <h3>Details</h3>
+            
+            <div class="task-meta-item">
+                <div class="meta-label">Status</div>
+                <div class="meta-value">
+                    <form method="post" id="status-form" action="{% url 'edit_task' project.id task.id %}">
+                        {% csrf_token %}
+                        <select name="status" class="form-control task-status-select" data-task-id="{{ task.id }}" data-project-id="{{ project.id }}">
+                            <option value="todo" {% if task.status == 'todo' %}selected{% endif %}>To Do</option>
+                            <option value="in_progress" {% if task.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                            <option value="review" {% if task.status == 'review' %}selected{% endif %}>Review</option>
+                            <option value="done" {% if task.status == 'done' %}selected{% endif %}>Done</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="task-meta-item">
+                <div class="meta-label">Assigned To</div>
+                <div class="meta-value">
+                    {% if task.assigned_to %}
+                        <div class="task-assignee">
+                            <div class="task-assignee-avatar">{{ task.assigned_to.username|first|upper }}</div>
+                            <span>{{ task.assigned_to.username }}</span>
+                        </div>
+                    {% else %}
+                        <span class="text-muted">Unassigned</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="task-meta-item">
+                <div class="meta-label">Due Date</div>
+                <div class="meta-value">
+                    {% if task.due_date %}
+                        <span {% if task.due_date < now %}class="text-danger"{% endif %}>
+                            {{ task.due_date|date:"F j, Y" }}
+                        </span>
+                    {% else %}
+                        <span class="text-muted">No due date</span>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="task-meta-item">
+                <div class="meta-label">Created</div>
+                <div class="meta-value">{{ task.created_at|date:"F j, Y" }}</div>
+            </div>
+            
+            <div class="task-meta-item">
+                <div class="meta-label">Last Updated</div>
+                <div class="meta-value">{{ task.updated_at|date:"F j, Y" }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .task-detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .task-breadcrumb {
+        font-size: 0.875rem;
+    }
+    
+    .task-breadcrumb a {
+        color: #4a6cf7;
+        text-decoration: none;
+    }
+    
+    .task-breadcrumb a:hover {
+        text-decoration: underline;
+    }
+    
+    .task-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+    
+    .task-detail-container {
+        display: flex;
+        gap: 2rem;
+    }
+    
+    .task-detail-main {
+        flex: 1;
+    }
+    
+    .task-detail-sidebar {
+        flex: 0 0 300px;
+    }
+    
+    .task-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .task-status {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: bold;
+    }
+    
+    .status-todo {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    
+    .status-in_progress {
+        background-color: #17a2b8;
+        color: white;
+    }
+    
+    .status-review {
+        background-color: #4a6cf7;
+        color: white;
+    }
+    
+    .status-done {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .task-description-section, .task-meta-section {
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .task-meta-item {
+        display: flex;
+        border-bottom: 1px solid #dee2e6;
+        padding: 0.75rem 0;
+    }
+    
+    .task-meta-item:last-child {
+        border-bottom: none;
+    }
+    
+    .meta-label {
+        flex: 0 0 120px;
+        font-weight: bold;
+    }
+    
+    .meta-value {
+        flex: 1;
+    }
+    
+    .task-assignee {
+        display: flex;
+        align-items: center;
+    }
+    
+    .task-assignee-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background-color: #4a6cf7;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        margin-right: 0.5rem;
+    }
+    
+    @media (max-width: 768px) {
+        .task-detail-container {
+            flex-direction: column;
+        }
+        
+        .task-detail-sidebar {
+            flex: 1 1 100%;
+        }
+    }
+</style>
+
+{% block scripts %}
+<script src="/static/js/tasks.js"></script>
+<script src="/static/js/project.js"></script>
+{% endblock %}
+
+{% endblock %}

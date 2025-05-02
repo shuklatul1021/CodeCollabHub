@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+
+{% block title %}Invite Members - {{ project.name }} - CodeCollab Hub{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-8" style="margin: 0 auto;">
+        <div class="card">
+            <div class="card-header">
+                <h2>Invite Members to {{ project.name }}</h2>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="form-group">
+                        <label for="{{ form.username.id_for_label }}" class="form-label">Username</label>
+                        {{ form.username }}
+                        {% if form.username.errors %}
+                        <div class="alert alert-danger">
+                            {% for error in form.username.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        <small class="form-text text-muted">Enter the username of a registered user to invite them to this project.</small>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Invite User</button>
+                        <a href="{% url 'project_members' project.id %}" class="btn btn-secondary">View All Members</a>
+                        <a href="{% url 'project_detail' project.id %}" class="btn btn-secondary">Back to Project</a>
+                    </div>
+                </form>
+                
+                <hr>
+                
+                <div class="invite-link-section">
+                    <h3>Project Information</h3>
+                    <p>Share the following project details with potential collaborators:</p>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Project Name:</div>
+                        <div class="info-value">{{ project.name }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Project Owner:</div>
+                        <div class="info-value">{{ project.owner.username }}</div>
+                    </div>
+                    
+                    <div class="info-item">
+                        <div class="info-label">Project URL:</div>
+                        <div class="info-value">
+                            <span id="invite-link">{{ request.scheme }}://{{ request.get_host }}{% url 'project_detail' project.id %}</span>
+                            <button id="copy-invite-link" class="btn btn-sm btn-secondary">Copy Link</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .invite-link-section {
+        margin-top: 2rem;
+    }
+    
+    .info-item {
+        display: flex;
+        margin-bottom: 1rem;
+    }
+    
+    .info-label {
+        font-weight: bold;
+        width: 150px;
+    }
+    
+    .info-value {
+        flex: 1;
+        display: flex;
+        align-items: center;
+    }
+    
+    #invite-link {
+        margin-right: 1rem;
+        word-break: break-all;
+    }
+</style>
+
+{% block scripts %}
+<script src="/static/js/project.js"></script>
+{% endblock %}
+
+{% endblock %}

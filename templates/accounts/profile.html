@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - CodeCollab Hub{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-8" style="margin: 0 auto;">
+        <div class="card">
+            <div class="card-header">
+                <h2>Profile</h2>
+            </div>
+            <div class="card-body">
+                {% if user_form and profile_form %}
+                <!-- Edit profile form -->
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <h3>User Information</h3>
+                    {% for field in user_form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <h3>Profile Details</h3>
+                    {% for field in profile_form %}
+                    <div class="form-group">
+                        <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                        {{ field }}
+                        {% if field.errors %}
+                        <div class="alert alert-danger">
+                            {% for error in field.errors %}
+                                {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a href="{% url 'profile' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+                {% else %}
+                <!-- Profile display -->
+                <div class="profile-info">
+                    <div class="profile-header">
+                        <h3>{{ user.username }}</h3>
+                        <a href="{% url 'edit_profile' %}" class="btn btn-primary btn-sm">Edit Profile</a>
+                    </div>
+                    
+                    <div class="profile-details">
+                        <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        <p><strong>Joined:</strong> {{ user.date_joined|date:"F j, Y" }}</p>
+                        <p><strong>Bio:</strong> {{ user.profile.bio|default:"No bio provided" }}</p>
+                        <p><strong>Preferred Language:</strong> {{ user.profile.get_preferred_language_display }}</p>
+                    </div>
+                    
+                    <div class="profile-stats">
+                        <h4>Statistics</h4>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-value">{{ user.owned_projects.count }}</span>
+                                <span class="stat-label">Projects Owned</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">{{ user.projects.count }}</span>
+                                <span class="stat-label">Projects Joined</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value">{{ user.assigned_tasks.count }}</span>
+                                <span class="stat-label">Tasks Assigned</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if not user_form %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <h3>Recent Activity</h3>
+            </div>
+            <div class="card-body">
+                <!-- Here you might display recent contributions, edits, etc. -->
+                <p>Activity tracking will be implemented in future updates.</p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+    .profile-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .profile-details {
+        margin-bottom: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    
+    .stat-item {
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        padding: 1rem;
+        text-align: center;
+    }
+    
+    .stat-value {
+        display: block;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #4a6cf7;
+    }
+    
+    .stat-label {
+        display: block;
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-top: 0.25rem;
+    }
+    
+    @media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}

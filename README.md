@@ -146,4 +146,13 @@ The following Python packages are required (see requirements.txt for versions):
    - Add file upload support
    - Implement code execution
    - Add more editor features
-   - Enhance version control 
+   - Enhance version control
+
+
+## Gallary
+   ![Screenshot (316)](https://github.com/user-attachments/assets/17f53388-a0c6-4d6f-b1fd-e6bec626cd11)
+   ![Screenshot (317)](https://github.com/user-attachments/assets/7bc4a8c8-371b-4ebb-8f3a-d19990bfc310)
+   ![Screenshot (318)](https://github.com/user-attachments/assets/891a374d-f9d1-40b6-ad41-76b0a8705723)
+   ![Screenshot (319)](https://github.com/user-attachments/assets/5e2709ec-0d0a-439b-ba63-3a2fc7fe1626)
+
+

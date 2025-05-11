@@ -16,7 +16,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-key-for-development-only')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
 # Update ALLOWED_HOSTS for Vercel
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '.vercel.app,localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '.vercel.app,localhost ,127.0.0.1 ,34.93.222.242, collab.codecollabhub.xyz').split(',')
 
 # Update CSRF settings
 CSRF_TRUSTED_ORIGINS = os.getenv('CSRF_TRUSTED_ORIGINS', 'https://*.vercel.app,http://localhost:8000,http://127.0.0.1:8000,http://collab.codecollabhub.xyz , http://34.93.222.242').split(',')
